@@ -39,11 +39,9 @@ class ShellScript(OperationBase):
 
   def run(self):
     print os.getcwd()
-    cmd = self.command.split(' ')
-
+    cmd = [x for x in self.command.split(' ') if x]
     p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                          close_fds=True, cwd=self.working_dir, env=os.environ)
-
     stdout = p.stdout
     while(True):
       p.poll() #returns None while subprocess is running

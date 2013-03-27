@@ -1,3 +1,4 @@
+import os
 from hal_configurator.lib.config_loaders import FileConfigLoader
 __author__ = 'Costa Halicea'
 
@@ -25,7 +26,9 @@ class ExecuteExternalConfig(OperationBase):
         res = self.value_substitutor.substitute(self.ConfigPath)
     else:
       raise InvalidCommandArgumentsError(str(errors))
-    loader = FileConfigLoader(self.ConfigPath)
+    if not os.path.isabs(res):
+      res = os.path.join(os.path.dirname(self.executor.parent.config_loader.config_file), res)
+    loader = FileConfigLoader(res)
     config = loader.load_config()
     builder = self.executor.parent
     builder.apply_parametrized(config)
