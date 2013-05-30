@@ -17,6 +17,19 @@ class Condition(OperationBase):
             ArgumentDescriptor("Bundle", "Operations Bundle", "OperationsBundle"),
            ]
   
+  @classmethod
+  def get_empty_dict(cls):
+    return{
+            "Code":cls.get_code(),
+            "Type":cls.get_name(), 
+            "Arguments":{
+              "Expression":"\"true\"==\"true\"",
+              "Bundle":{
+                "Name": "Incondition", 
+                "Operations": []
+              }
+            }
+          }
   def set_args(self, Expression, Bundle):
     self.kwargs["Expression"]= self.expression = Expression
     self.kwargs["Bundle"]=self.bundle = Bundle
