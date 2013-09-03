@@ -1,10 +1,9 @@
 import urllib2
-from PIL import Image
 from hal_configurator.lib.command_base import \
   OperationBase, InvalidCommandArgumentsError, ArgumentDescriptor
 
 class Condition(OperationBase):
-  """Convert an Image to a different format"""
+  """Create a condition"""
   code = "condition"
   def __init__(self,*args, **kwargs):
     super(Condition, self).__init__(*args, **kwargs)
@@ -37,6 +36,7 @@ class Condition(OperationBase):
   def run(self):  
     is_valid, errors = self.validate_args()
     if is_valid:
+      print self.expression
       result = eval(self.expression)
       if result:
         self.executor.execute_bundle_within_current_scope(self.bundle)

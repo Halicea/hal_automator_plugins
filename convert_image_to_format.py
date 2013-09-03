@@ -1,37 +1,47 @@
-import urllib2
 from PIL import Image
+import os
+
+__author__ = 'Costa Halicea'
+
 from hal_configurator.lib.command_base import \
   OperationBase, InvalidCommandArgumentsError, ArgumentDescriptor
+
 class ConvertImageToFormat(OperationBase):
   """Replaces File(Destination) from a resource file supplied by URI"""
-  code = "convert_image_to_format"
+
   def __init__(self,*args, **kwargs):
     super(ConvertImageToFormat, self).__init__(*args, **kwargs)
     self.result = ''
-  
-  @classmethod  
-  def get_arg_descriptors(cls):
-    return [
-            ArgumentDescriptor("ImageResource", "The Resource to use", "text"),
-            ArgumentDescriptor("Destination", "Where to put the file(relative to the working dir or absolute)", "text")
-            ArgumentDescriptor("Format", "Where to put the file(relative to the working dir or absolute)", "text")
-          ]
-  
+
   def set_args(self, ImageResource, Destination, Format):
-    self.kwargs["ImageResource"]= self.resource = ImageResource
-    self.kwargs["Destination"]= self.destination = Destination
-    self.kwargs["Format"]= self.format = Format
-  
+    """
+    :param ConfigPath:
+    :type ConfigPath: str
+    """
+    self.kwargs["ImageResource"] = self.img_res = ImageResource
+    self.kwargs["Destination"] = self.dest = Destination
+    self.kwargs["Format"] = self.format = Format
+
   def run(self):
     is_valid, errors = self.validate_args()
     if is_valid:
-      img = Image(self.resource)
-      img.save(self.destination, self.format)
+      self.img_res = self.value_substitutor.substitute(self.img_res)
+      self.dest = self.value_substitutor.substitute(self.dest)
+      self.format = self.value_substitutor.substitute(self.format)
+      img = Image.open(self.img_res);
+      img.save(self.dest, self.format);
     else:
       raise InvalidCommandArgumentsError(str(errors))
 
-__plugin__ = ConvertImageToFormat
+  @classmethod
+  def get_arg_descriptors(cls):
+    return [
+      ArgumentDescriptor("ImageResource", "External Configuration Directory", "text"),
+      ArgumentDescriptor("Destination", "External Configuration Directory", "text"),
+      ArgumentDescriptor("Format", "External Configuration Directory", "text")
+    ]
+  @classmethod
+  def get_name(cls):
+    return "Convert Image to Format"
 
-def test_replace_from_url():
-  rfu = ConvertImageToFormat(verbose=True)
-  rfu.set_args()
+__plugin__ = ConvertImageToFormat
