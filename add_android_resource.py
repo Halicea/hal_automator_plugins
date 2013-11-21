@@ -18,7 +18,7 @@ class AddAndroidResource(OperationBase):
             ArgumentDescriptor("IteratorArray", "Iterator for the Resources", "text"),
             ArgumentDescriptor("ProjectFile", "ProjectFilePath", "text")
            ]
-
+  
   def set_args(self, ResourceFormat, DestinationFormat, IteratorArray, ProjectFile):
     self.kwargs["ProjectFile"]=self.project_file = ProjectFile
     self.kwargs["ResourceFormat"]= self.resource_format = ResourceFormat
