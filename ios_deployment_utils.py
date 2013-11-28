@@ -1,13 +1,15 @@
-import os
-import sys
-from subprocess import call
-import shutil
 from os.path import expanduser
+from subprocess import call
+import argparse
+import os
+import shutil
+import subprocess
+import sys
+
 profiles_dir = expanduser("~/Library/MobileDevice/Provisioning Profiles")
 default_keychain = expanduser('~/Library/Keychains/login.keychain')
-import argparse
 class CommandArgsProxy(object):
-  def init(self, **kwargs):
+  def __init__(self, **kwargs):
     self.command = kwargs.has_key('command') and kwargs['command'] or None
     self.command_type = kwargs.has_key('command_type') and kwargs['command_type'] or None
     self.passwd = kwargs.has_key('passwd') and kwargs['passwd'] or None
@@ -60,7 +62,6 @@ def ls_profiles(path=None, args=None):
       pfile = os.path.join(profiles_dir, p)
       info = get_info(pfile)
       infos.append(info)
-
   counter=1
   infos = sorted(infos, key=lambda x: x['name'], reverse=False)
   for info in infos:
@@ -71,15 +72,25 @@ def ls_profiles(path=None, args=None):
   return infos
 
 def add_cert(path, args=None):
-  cmd='security import %s -k %s -P %s -T /usr/bin/codesign'%(path, args.passwd, args.keychain)
-  call(cmd)
+  cmd='/usr/bin/security import %s -k %s -P %s -T /usr/bin/codesign'%(path, args.keychain, args.passwd)
+  print cmd
+  call(cmd.split(' '))
 
 def ls_certs(path, args=None):
-  cmd='security find-certificate -a -p -Z -c "" %s'%(args.match, args.keychain)
-  call(cmd)
+  command='/usr/bin/security find-certificate -a -Z -c "%s" %s | grep SHA-1'%(path, args.keychain)
+  cmd = [x for x in command.split(' ') if x]
+  p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
+                         close_fds=True, env=os.environ)
+  
+  output = []
+  for line in iter(p.stdout.readline, b''):
+    if line.startswith('SHA-1 hash: '):
+      output.append(line[len('SHA-1 hash: '):-1])
+  return output
 
 def rm_cert(path, args=None):
-  cmd = 'security delete-certificate -c %s %s'%(path, args.keychain)
+  cmd = ['/usr/bin/security', 'delete-certificate', '-c', '%s'%path, args.keychain]
+  print cmd
   call(cmd)
 command_dict={
   "cert":{

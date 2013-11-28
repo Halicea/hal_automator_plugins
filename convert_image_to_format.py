@@ -1,5 +1,5 @@
-from PIL import Image
-import os
+from PIL import Image #@UnresolvedImport
+
 
 __author__ = 'Costa Halicea'
 

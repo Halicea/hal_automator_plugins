@@ -1,6 +1,6 @@
-import urllib2
-from hal_configurator.lib.command_base import \
-  OperationBase, InvalidCommandArgumentsError, ArgumentDescriptor
+from hal_configurator.lib.command_base import OperationBase, \
+  InvalidCommandArgumentsError, ArgumentDescriptor
+
 
 class Condition(OperationBase):
   """Create a condition"""

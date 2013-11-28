@@ -5,7 +5,6 @@ import re
 import glob
 import codecs
 import os
-from xml.sax.saxutils import escape
 class ReplaceText(OperationBase):
   """Replaces Text in the Matched Files"""
   code = "replace_text"

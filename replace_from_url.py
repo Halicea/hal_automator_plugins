@@ -26,8 +26,10 @@ class ReplaceFromUrl(OperationBase):
       fh = open(self.destination, 'wb')
       fh.write(f.read())
       fh.close()
+      print 'Downloaded the file to ', self.destination
     else:
       raise InvalidCommandArgumentsError(str(errors))
+    
 
 __plugin__ = ReplaceFromUrl
 

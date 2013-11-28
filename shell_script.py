@@ -1,9 +1,8 @@
 import os
 import subprocess
-import time
 from hal_configurator.lib.command_base import OperationBase, InvalidCommandArgumentsError,\
   ArgumentDescriptor
-from subprocess import call
+  
 class ShellScript(OperationBase):
 
   def __init__(self, *args, **kwargs):
@@ -42,13 +41,8 @@ class ShellScript(OperationBase):
     cmd = [x for x in self.command.split(' ') if x]
     p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                          close_fds=True, cwd=self.working_dir, env=os.environ)
-    stdout = p.stdout
-    while(True):
-      p.poll() #returns None while subprocess is running
-      line = stdout.readline()
-      #time.sleep(0.1)
-      self.log.write("  >>>%s"%line[:-1])
-      if (line == "" and p.returncode != None):
-        break
-    stdout.close()
+    
+    for line in iter(p.stdout.readline, b''):
+      self.log.write("\t%s"%line[:-1])
+      
 __plugin__ = ShellScript
