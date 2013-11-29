@@ -1,5 +1,4 @@
 from os.path import expanduser
-from subprocess import call
 import argparse
 import os
 import shutil
@@ -71,6 +70,19 @@ def ls_profiles(path=None, args=None):
     counter+=1
   return infos
 
+def call(cmd):
+  result = []
+  p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
+                         close_fds=True, env=os.environ)
+  output = []
+  for line in iter(p.stdout.readline, b''):
+    if len(line)>1:
+      output.append(line[:-1])
+  code = p.wait()
+  if code>0:
+    raise Exception('Shell process exited with error \n cmd: %s'%cmd)
+  return result
+    
 def add_cert(path, args=None):
   cmd='/usr/bin/security import %s -k %s -P %s -T /usr/bin/codesign'%(path, args.keychain, args.passwd)
   print cmd
@@ -79,14 +91,7 @@ def add_cert(path, args=None):
 def ls_certs(path, args=None):
   command='/usr/bin/security find-certificate -a -Z -c "%s" %s | grep SHA-1'%(path, args.keychain)
   cmd = [x for x in command.split(' ') if x]
-  p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
-                         close_fds=True, env=os.environ)
-  
-  output = []
-  for line in iter(p.stdout.readline, b''):
-    if line.startswith('SHA-1 hash: '):
-      output.append(line[len('SHA-1 hash: '):-1])
-  return output
+  return call(cmd)
 
 def rm_cert(path, args=None):
   cmd = ['/usr/bin/security', 'delete-certificate', '-c', '%s'%path, args.keychain]

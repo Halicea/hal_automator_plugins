@@ -2,7 +2,10 @@ import os
 import subprocess
 from hal_configurator.lib.command_base import OperationBase, InvalidCommandArgumentsError,\
   ArgumentDescriptor
-  
+class ShellScriptError(Exception):
+  def __init__(self, message):
+    super(self, ShellScriptError).__init__(message)
+    
 class ShellScript(OperationBase):
 
   def __init__(self, *args, **kwargs):
@@ -44,5 +47,9 @@ class ShellScript(OperationBase):
     
     for line in iter(p.stdout.readline, b''):
       self.log.write("\t%s"%line[:-1])
+    code = p.wait()
+    self.log.write('\tExit code:%s'%code)
+    if code>0:
+      raise ShellScriptError('Shell command returned an error code different than 0')
       
 __plugin__ = ShellScript
