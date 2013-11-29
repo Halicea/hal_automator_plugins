@@ -80,7 +80,7 @@ def call(cmd):
       output.append(line[:-1])
   code = p.wait()
   if code>0:
-    raise Exception('Shell process exited with error \n cmd: %s'%cmd)
+    raise Exception('\n'.join(output)+'\nShell process exited with error code %s\n cmd: %s'%(code, cmd))
   return result
     
 def add_cert(path, args=None):
