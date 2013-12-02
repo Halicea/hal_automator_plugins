@@ -4,16 +4,16 @@ from hal_configurator.lib.command_base import OperationBase, InvalidCommandArgum
   ArgumentDescriptor
 class ShellScriptError(Exception):
   def __init__(self, message):
-    super(self, ShellScriptError).__init__(message)
-    
+    super(ShellScriptError, self).__init__(message)
+
 class ShellScript(OperationBase):
 
   def __init__(self, *args, **kwargs):
     super(ShellScript, self).__init__(*args, **kwargs)
-    
+
   def get_result(self):
     return OperationBase.get_result(self)
-  
+
   @classmethod
   def get_name(cls):
     return "Execute Shell Script"
@@ -44,12 +44,12 @@ class ShellScript(OperationBase):
     cmd = [x for x in self.command.split(' ') if x]
     p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                          close_fds=True, cwd=self.working_dir, env=os.environ)
-    
+
     for line in iter(p.stdout.readline, b''):
       self.log.write("\t%s"%line[:-1])
     code = p.wait()
     self.log.write('\tExit code:%s'%code)
     if code>0:
       raise ShellScriptError('Shell command returned an error code different than 0')
-      
+
 __plugin__ = ShellScript
