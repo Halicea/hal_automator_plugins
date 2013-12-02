@@ -32,7 +32,7 @@ class ReplaceFromUrl(OperationBase):
       try:
         fh = open(dest, 'wb')
         fh.write(f.read())
-      except(Exception, ex):
+      except Exception, ex:
         ex_raised = ex
       finally:
         if fh:
