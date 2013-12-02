@@ -1,0 +1,25 @@
+{
+  "Content": {
+    "OperationBundles": [
+      {
+        "Name": "Config", 
+        "Operations": [
+          {
+            "Arguments": {
+              "catch shell output": "true", 
+              "command": "git pull origin master", 
+              "is sudo": "true", 
+              "working directory": "./"
+            }, 
+            "Code": "shell_script", 
+            "Description": "No Description is set!"
+          }
+        ]
+      }
+    ]
+  }, 
+  "PublisherId": "", 
+  "RequiredVariables": {}, 
+  "Resources": [], 
+  "Variables": []
+}
