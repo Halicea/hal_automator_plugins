@@ -1,6 +1,7 @@
 import urllib2
 from hal_configurator.lib.command_base import \
   OperationBase, InvalidCommandArgumentsError, ArgumentDescriptor
+import os
 class ReplaceFromUrl(OperationBase):
   """Replaces File(Destination) from a resource file supplied by URI"""
   code = "replace_from_url"
@@ -27,9 +28,12 @@ class ReplaceFromUrl(OperationBase):
       if not dest.startswith('/'):
         if not dest.startswith('./'):
           dest = './'+dest
+      dest = os.path.abspath(dest)
       fh = None
       ex_raised = None
       try:
+        if not os.path.exists(dest):
+          open(dest, 'a').close()
         fh = open(dest, 'wb')
         fh.write(f.read())
       except Exception, ex:
