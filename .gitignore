@@ -33,3 +33,15 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+/add_android_resource.pyc
+/add_ios_resource.pyc
+/condition.pyc
+/config_reference.pyc
+/convert_image_to_format.pyc
+/delete_file.pyc
+/ios_deployment_utils.pyc
+/ios_utils.pyc
+/replace_from_url.pyc
+/replace_text.pyc
+/shell_script copy.pyc
+/shell_script.pyc

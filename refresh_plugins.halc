@@ -12,7 +12,7 @@
               "working directory": "./"
             }, 
             "Code": "shell_script", 
-            "Description": "No Description is set!"
+            "Description": "Get the Latest plugins"
           }
         ]
       }

@@ -27,13 +27,18 @@ class ReplaceFromUrl(OperationBase):
       if not dest.startswith('/'):
         if not dest.startswith('./'):
           dest = './'+dest
+      fh = None
+      ex_raised = None
       try:
         fh = open(dest, 'wb')
         fh.write(f.read())
-      except:
-        pass
+      except(Exception, ex):
+        ex_raised = ex
       finally:
-        fh.close()
+        if fh:
+          fh.close()
+        if ex_raised:
+          raise ex_raised
       print 'Downloaded the file to ', self.destination
     else:
       raise InvalidCommandArgumentsError(str(errors))
