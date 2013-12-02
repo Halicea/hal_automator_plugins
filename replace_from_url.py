@@ -7,8 +7,8 @@ class ReplaceFromUrl(OperationBase):
   def __init__(self,*args, **kwargs):
     super(ReplaceFromUrl, self).__init__(*args, **kwargs)
     self.result = ''
-  
-  @classmethod  
+
+  @classmethod
   def get_arg_descriptors(cls):
     return [
             ArgumentDescriptor("Resource", "The Resource to use", "text"),
@@ -23,13 +23,21 @@ class ReplaceFromUrl(OperationBase):
     if is_valid:
       res = self.resource.replace('\\', '/')
       f = urllib2.urlopen(res)
-      fh = open(self.destination, 'wb')
-      fh.write(f.read())
-      fh.close()
+      dest = self.destination
+      if not dest.startswith('/'):
+        if not dest.startswith('./'):
+          dest = './'+dest
+      try:
+        fh = open(dest, 'wb')
+        fh.write(f.read())
+      except:
+        pass
+      finally:
+        fh.close()
       print 'Downloaded the file to ', self.destination
     else:
       raise InvalidCommandArgumentsError(str(errors))
-    
+
 
 __plugin__ = ReplaceFromUrl
 
