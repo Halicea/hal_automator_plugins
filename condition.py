@@ -1,6 +1,7 @@
 from hal_configurator.lib.command_base import OperationBase, \
   InvalidCommandArgumentsError, ArgumentDescriptor
-
+CONDITION_BUNDLE = 'Incondition'
+OperationBase.register_bundle(CONDITION_BUNDLE)
 
 class Condition(OperationBase):
   """Create a condition"""
@@ -8,23 +9,23 @@ class Condition(OperationBase):
   def __init__(self,*args, **kwargs):
     super(Condition, self).__init__(*args, **kwargs)
     self.result = ''
-  
+
   @classmethod
   def get_arg_descriptors(cls):
     return [
             ArgumentDescriptor("Expression", "Python Expression", "text"),
             ArgumentDescriptor("Bundle", "Operations Bundle", "OperationsBundle"),
            ]
-  
+
   @classmethod
   def get_empty_dict(cls):
     return{
             "Code":cls.get_code(),
-            "Type":cls.get_name(), 
+            "Type":cls.get_name(),
             "Arguments":{
               "Expression":"\"true\"==\"true\"",
               "Bundle":{
-                "Name": "Incondition", 
+                "Name": CONDITION_BUNDLE,
                 "Operations": []
               }
             }
@@ -32,8 +33,8 @@ class Condition(OperationBase):
   def set_args(self, Expression, Bundle):
     self.kwargs["Expression"]= self.expression = Expression
     self.kwargs["Bundle"]=self.bundle = Bundle
-    
-  def run(self):  
+
+  def run(self):
     is_valid, errors = self.validate_args()
     if is_valid:
       print self.expression
