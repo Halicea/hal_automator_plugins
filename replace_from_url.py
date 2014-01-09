@@ -23,6 +23,8 @@ class ReplaceFromUrl(OperationBase):
     is_valid, errors = self.validate_args()
     if is_valid:
       res = self.resource.replace('\\', '/')
+      if not ("://" in res):
+        res = self.executor.resources_root+"/"+res
       f = urllib2.urlopen(res)
       dest = self.destination
       if not dest.startswith('/'):
