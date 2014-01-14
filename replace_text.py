@@ -42,6 +42,9 @@ class ReplaceText(OperationBase):
 
   def run(self):
     is_valid, errors =  self.validate_args()
+    self.StringMatch = self.value_substitutor.substitute(self.StringMatch)
+    self.FileMatch = self.value_substitutor.substitute(self.FileMatch)
+    self.ReplaceWith = self.value_substitutor.substitute(self.ReplaceWith)
     if is_valid:
       return self.__mass_replace__(self.FileMatch, self.StringMatch, self.ReplaceWith)
     else:

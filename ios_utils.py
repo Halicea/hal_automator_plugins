@@ -2,6 +2,7 @@ from hal_configurator.lib.command_base import OperationBase, ArgumentDescriptor
 from ios_deployment_utils import add_cert, rm_cert
 from ios_deployment_utils import add_profile, rm_profile, CommandArgsProxy
 from replace_from_url import ReplaceFromUrl
+from replace_text import ReplaceText
 import os
 
 __author__ = 'Costa Halicea'
@@ -20,7 +21,7 @@ class InstallIOSCertificate(OperationBase):
   def set_args(self, Resource, Password):
     self.kwargs["Resource"]=self.cert = Resource
     self.kwargs["Password"]=self.password = Password
-  
+
   def run(self):
     self.downloader.set_args(self.cert, '/tmp/temp.p12')
     self.downloader.run()
@@ -43,7 +44,7 @@ class RemoveIOSCertificates(OperationBase):
            ]
   def set_args(self, SearchString):
     self.kwargs["SearchString"]=self.search_string = SearchString
-  
+
   def run(self):
     rm_cert(self.search_string, CommandArgsProxy())
 
@@ -63,7 +64,7 @@ class ListIOSCertificates(OperationBase):
            ]
   def set_args(self, SearchString):
     self.kwargs["SearchString"]=self.search_string = SearchString
-  
+
   def run(self):
     rm_cert(self.search_string, CommandArgsProxy())
 
@@ -80,7 +81,7 @@ class AddIOSProvisioningProfile(OperationBase):
            ]
   def set_args(self, Resource):
     self.kwargs["Resource"]=self.provistioning_profile = Resource
-  
+
   def run(self):
     self.downloader.set_args(self.provistioning_profile, '/tmp/temp.mobileprovision')
     self.downloader.run()
@@ -98,14 +99,32 @@ class RemoveIOSProvisioningProfile(OperationBase):
             ArgumentDescriptor("Resource", "The provistioning profile resource", "text")
            ]
   def set_args(self, Resource):
-    
+
     self.kwargs["Resource"]=self.provistioning_profile = Resource
-  
+
   def run(self):
     self.downloader.set_args(self.provistioning_profile, '/tmp/temp.mobileprovision')
     self.downloader.run()
     rm_profile('/tmp/temp.mobileprovision', CommandArgsProxy())
     os.unlink('/tmp/temp.mobileprovision')
     self.result =  True
+# class IncreaseBundleVersion(OperationBase):
+#   def __init__(self, *args, **kwargs):
+#     super(IncreaseBundleVersion, self).__init__(*args, **kwargs)
+#     self.replace_text = ReplaceText(*args, **kwargs)
+#
+#   @classmethod
+#   def get_arg_descriptors(cls):
+#     return [
+#             ArgumentDescriptor("Info.plist", "the path of the info.plist file", "text")
+#            ]
+#   def set_args(self, InfoPlist):
+#     self.kwargs["Info.plist"]=self.infoplist = InfoPlist
+#
+#   def run(self):
+#     vc = "\\<CodesignKey\\>.*\\</CodesignKey\\>"
+#     vc2 = "\\<CodesignKey\\>.*\\</CodesignKey\\>"
+#     self.replace_text.run()
+
 
 __plugins__ = [InstallIOSCertificate, RemoveIOSCertificates, ListIOSCertificates, AddIOSProvisioningProfile, RemoveIOSProvisioningProfile]
