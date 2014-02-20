@@ -13,7 +13,7 @@ class ConvertImageToFormat(OperationBase):
     super(ConvertImageToFormat, self).__init__(*args, **kwargs)
     self.result = ''
 
-  def set_args(self, ImageResource, Destination, Format, Resolution):
+  def set_args(self, ImageResource, Destination, Format, Resolution=None):
     """
     :param ConfigPath:
     :type ConfigPath: str
@@ -49,7 +49,7 @@ class ConvertImageToFormat(OperationBase):
 
       if self.resolution:
         self.resolution = self.value_substitutor.substitute(self.resolution)
-      self.log.write('\n'.join([self.img_res, self.dest, self.format, self.resolution]))
+      self.log.write('\n'.join([self.img_res, self.dest, self.format, self.resolution or '?X?']))
       img = Image.open(self.img_res);
       if self.resolution:
         print self.get_resolution_set()
@@ -57,6 +57,7 @@ class ConvertImageToFormat(OperationBase):
       img.save(self.dest, self.format)
     else:
       raise InvalidCommandArgumentsError(str(errors))
+      #
 
   @classmethod
   def get_arg_descriptors(cls):
