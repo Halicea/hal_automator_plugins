@@ -62,7 +62,7 @@ class ReplaceText(OperationBase):
           self.__file_replace__(fname, pat, s_after)
 
   def __file_replace__(self, fname, pat, s_after):
-    with open(fname) as f:
+    with codecs.open(fname, 'r', 'utf-8') as f:
       matchset = re.findall(pat, f.read())
       if not matchset:
         if self.verbose:
