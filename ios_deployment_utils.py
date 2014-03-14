@@ -84,7 +84,7 @@ def call(cmd):
   return result
     
 def add_cert(path, args=None):
-  cmd='/usr/bin/security import %s -k %s -P %s -T /usr/bin/codesign'%(path, args.keychain, args.passwd)
+  cmd='/usr/bin/security import %s -k %s -P %s -T  -A /usr/bin/codesign'%(path, args.keychain, args.passwd)
   print cmd
   call(cmd.split(' '))
 
