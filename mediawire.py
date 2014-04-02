@@ -58,12 +58,15 @@ class RegisterCertificate(OperationBase):
       'Email':u,
       'Password':p
       }), headers ={'ClientVersion':'30.00.00', 'Content-Type':'application/json'})
+    if res.status_code!=200:
+      self.log.write('Invalid Status Code returned #'+str(res.status_code))
+      raise Exception('Invalid Status Code returned #'+str(res.status_code))
     self.log.write(str(res.json()))
     if 'data' in res.json():
       self.token = res.json()['data']
     else:
       self.token = None
-    
+
   def run(self):
     self.login()
     if self.token:
@@ -82,7 +85,7 @@ class RegisterCertificate(OperationBase):
       if res.status_code != 200:
         self.log.write('Invalid Status Code returned #'+str(res.status_code))
         raise Exception('Invalid Status Code returned #'+str(res.status_code))
-      print res
+      self.log.write(res.text)
     else:
       raise Exception('Not Loged in to save the certificate')
 
@@ -101,7 +104,7 @@ def test_RegisterCertificate():
     'AuthPassword':'demo12345',
     'Target':'Development',
     'Password':'Mwr12345',
-    'P12Resource':'/Users/kostamihajlov/Desktop/CWTPushCertificateDevelopment.p12' 
+    'P12Resource':'/Users/kostamihajlov/Desktop/CWTPushCertificateDevelopment.p12'
   })
   a.run()
 
