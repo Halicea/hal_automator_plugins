@@ -41,7 +41,8 @@ class ShellScript(OperationBase):
 
   def run(self):
     print os.getcwd()
-    cmd = [x for x in self.command.split(' ') if x]
+    cmd_str = self.value_substitutor.substitute(self.command)
+    cmd = [x for x in cmd_str.split(' ') if x]
     p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                          close_fds=True, cwd=self.working_dir, env=os.environ)
 
