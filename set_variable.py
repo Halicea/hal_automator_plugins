@@ -1,5 +1,6 @@
 from hal_configurator.lib.command_base import \
   OperationBase, InvalidCommandArgumentsError, ArgumentDescriptor
+from hal_configurator.lib.models.hal_var import HalVar
 
 class SetVariable(OperationBase):
   def __init__(self,*args, **kwargs):
@@ -20,7 +21,7 @@ class SetVariable(OperationBase):
       if r:
         r[0]['value'] = su(self.kwargs["NewValue"])
       else:
-        self.executor.bundle_vars.append({'name':su(self.kwargs['Variable']), 'value':su(self.kwargs["NewValue"])})
+        self.executor.bundle_vars.append(HalVar.from_dict({'name':su(self.kwargs['Variable']), 'value':su(self.kwargs["NewValue"])}))
     else:
       raise InvalidCommandArgumentsError(str(errors))
 
