@@ -1,5 +1,4 @@
-from hal_configurator.lib.command_base import OperationBase, \
-  InvalidCommandArgumentsError, ArgumentDescriptor
+from hal_configurator.lib.command_base import OperationBase, ArgumentDescriptor
 EMPTY_BUNDLE = 'InForLoop'
 OperationBase.register_bundle(EMPTY_BUNDLE)
 

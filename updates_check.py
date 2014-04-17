@@ -25,7 +25,7 @@ def update_if_needed():
   if update_pending():
     try:
       os.chdir(os.path.dirname(__file__))
-      should_update = subprocess.check_output('git diff origin/master'.split(' '))
+      should_update = subprocess.check_output('git diff origin/master'.split(' '))  # @UnusedVariable
     except:
       pass
     finally:

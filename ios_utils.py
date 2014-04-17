@@ -2,7 +2,6 @@ from hal_configurator.lib.command_base import OperationBase, ArgumentDescriptor
 from ios_deployment_utils import add_cert, rm_cert
 from ios_deployment_utils import add_profile, rm_profile, CommandArgsProxy
 from replace_from_url import ReplaceFromUrl
-from replace_text import ReplaceText
 import os
 
 __author__ = 'Costa Halicea'

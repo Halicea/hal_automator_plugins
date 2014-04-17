@@ -2,7 +2,6 @@ import json
 import codecs
 from hal_configurator.lib.command_base import \
   OperationBase, InvalidCommandArgumentsError, ArgumentDescriptor
-from numpy.core.defchararray import rindex
 
 class SetJsonValueInFile(OperationBase):
   def __init__(self,*args, **kwargs):
