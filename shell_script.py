@@ -49,8 +49,11 @@ class ShellScript(OperationBase):
     for line in iter(p.stdout.readline, b''):
       self.log.write("\t%s"%line[:-1])
     code = p.wait()
+    for line in iter(p.stderr.readline, b''):
+      self.log.write("\t%s"%line[:-1])
     self.log.write('\tExit code:%s'%code)
     if code>0:
+      self.log.write(cmd_str)
       raise ShellScriptError('Shell command returned an error code different than 0')
 
 __plugin__ = ShellScript

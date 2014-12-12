@@ -28,7 +28,7 @@ def get_info(path, args=None):
       r = prof_str.index('</string>', ind)
       return prof_str[l:r]
     except:
-      
+
       ind = prof_str.index('<key>Name</key>\n')+len('<key>Name</key>\n')
       l = prof_str.index('<string>', ind)+len('<string>')
       r = prof_str.index('</string>', ind)
@@ -71,7 +71,6 @@ def ls_profiles(path=None, args=None):
   return infos
 
 def call(cmd):
-  result = []
   p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
                          close_fds=True, env=os.environ)
   output = []
@@ -81,17 +80,28 @@ def call(cmd):
   code = p.wait()
   if code>0:
     raise Exception('\n'.join(output)+'\nShell process exited with error code %s\n cmd: %s'%(code, cmd))
-  return result
-    
+  return '\n'.join(output)
+
 def add_cert(path, args=None):
   cmd='/usr/bin/security import %s -k %s -P %s -T  -A /usr/bin/codesign'%(path, args.keychain, args.passwd)
   print cmd
   call(cmd.split(' '))
 
-def ls_certs(path, args=None):
-  command='/usr/bin/security find-certificate -a -Z -c "%s" %s | grep SHA-1'%(path, args.keychain)
+def ls_certs(args):
+  import pdb; pdb.set_trace()  # XXX BREAKPOINT
+  command = "/usr/bin/security dump-keychain {} |grep \"labl\"".format(args.keychain)
   cmd = [x for x in command.split(' ') if x]
-  return call(cmd)
+  output = call(cmd).split('\n')
+  prefix = "\"labl\"<blob>=\""
+  result = []
+  for line in output:
+      if prefix in line:
+          prefix_end = line.index(prefix)+len(prefix)
+          result.append(line[prefix_end:-1])
+  return result
+
+
+
 
 def rm_cert(path, args=None):
   cmd = ['/usr/bin/security', 'delete-certificate', '-c', '%s'%path, args.keychain]

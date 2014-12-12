@@ -1,6 +1,4 @@
 from PIL import Image #@UnresolvedImport
-
-
 __author__ = 'Costa Halicea'
 
 from hal_configurator.lib.command_base import \

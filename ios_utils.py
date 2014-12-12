@@ -1,5 +1,5 @@
 from hal_configurator.lib.command_base import OperationBase, ArgumentDescriptor
-from ios_deployment_utils import add_cert, rm_cert
+from ios_deployment_utils import add_cert, rm_cert, ls_certs
 from ios_deployment_utils import add_profile, rm_profile, CommandArgsProxy
 from replace_from_url import ReplaceFromUrl
 import os
@@ -45,11 +45,20 @@ class RemoveIOSCertificates(OperationBase):
     self.kwargs["SearchString"]=self.search_string = SearchString
 
   def run(self):
-    rm_cert(self.search_string, CommandArgsProxy())
+    self.kwargs["SearchString"]=self.search_string = self.value_substitutor.substitute(self.search_string)
+    items = ls_certs(CommandArgsProxy())
+    certs_to_delete = []
+    for cert_name in items:
+      print "Found Cert:{} matching with:{}".format(cert_name, self.search_string)
+      if self.search_string in cert_name:
+        certs_to_delete.append(cert_name)
+    for cert_name in certs_to_delete:
+      print 'Deleting: {}'.format(cert_name)
+      rm_cert(cert_name, CommandArgsProxy())
 
 class ListIOSCertificates(OperationBase):
   '''
-  Removes a certificate from the current system based on the match string providede
+  Lists all the certificates it can match
   '''
   def __init__(self,*args, **kwargs):
     super(ListIOSCertificates, self).__init__(*args, **kwargs)
@@ -65,7 +74,11 @@ class ListIOSCertificates(OperationBase):
     self.kwargs["SearchString"]=self.search_string = SearchString
 
   def run(self):
-    rm_cert(self.search_string, CommandArgsProxy())
+    self.search_string = self.value_substitutor.substitute(self.search_string)
+    results = ls_certs(CommandArgsProxy())
+    filtered = [x for x in results if self.search_string in results]
+    self.log.write('\n'.join(filtered))
+    return results
 
 
 class AddIOSProvisioningProfile(OperationBase):
@@ -106,24 +119,6 @@ class RemoveIOSProvisioningProfile(OperationBase):
     self.downloader.run()
     rm_profile('/tmp/temp.mobileprovision', CommandArgsProxy())
     os.unlink('/tmp/temp.mobileprovision')
-    self.result =  True
-# class IncreaseBundleVersion(OperationBase):
-#   def __init__(self, *args, **kwargs):
-#     super(IncreaseBundleVersion, self).__init__(*args, **kwargs)
-#     self.replace_text = ReplaceText(*args, **kwargs)
-#
-#   @classmethod
-#   def get_arg_descriptors(cls):
-#     return [
-#             ArgumentDescriptor("Info.plist", "the path of the info.plist file", "text")
-#            ]
-#   def set_args(self, InfoPlist):
-#     self.kwargs["Info.plist"]=self.infoplist = InfoPlist
-#
-#   def run(self):
-#     vc = "\\<CodesignKey\\>.*\\</CodesignKey\\>"
-#     vc2 = "\\<CodesignKey\\>.*\\</CodesignKey\\>"
-#     self.replace_text.run()
-
+    self.result = True
 
 __plugins__ = [InstallIOSCertificate, RemoveIOSCertificates, ListIOSCertificates, AddIOSProvisioningProfile, RemoveIOSProvisioningProfile]
