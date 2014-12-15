@@ -88,7 +88,6 @@ def add_cert(path, args=None):
   call(cmd.split(' '))
 
 def ls_certs(args):
-  import pdb; pdb.set_trace()  # XXX BREAKPOINT
   command = "/usr/bin/security dump-keychain {} |grep \"labl\"".format(args.keychain)
   cmd = [x for x in command.split(' ') if x]
   output = call(cmd).split('\n')
@@ -100,13 +99,27 @@ def ls_certs(args):
           result.append(line[prefix_end:-1])
   return result
 
+def get_cert_sha1(common_name, args):
+  cmd = ['/usr/bin/security',
+  'find-certificate','-a','-Z','-c',
+  '\"{}\"'.format(common_name),
+  args.keychain, '| grep SHA-1']
 
+  output = call(cmd).split('\n')
+  prefix = "SHA-1 hash:"
+  result = []
+  for line in output:
+    result.append(line.strip()[len(prefix):].strip())
+  return result
 
-
-def rm_cert(path, args=None):
-  cmd = ['/usr/bin/security', 'delete-certificate', '-c', '%s'%path, args.keychain]
+def rm_cert(path=None, sha1=None, args=None):
+  if path:
+    cmd = ['/usr/bin/security', 'delete-certificate', '-c', '%s'%path, args.keychain]
+  if sha1:
+     cmd = ['/usr/bin/security', 'delete-certificate', '-Z', '\"%s\"'%sha1, args.keychain]
   print cmd
   call(cmd)
+
 command_dict={
   "cert":{
     "add":add_cert,
