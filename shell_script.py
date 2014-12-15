@@ -43,14 +43,17 @@ class ShellScript(OperationBase):
     print os.getcwd()
     cmd_str = self.value_substitutor.substitute(self.command)
     cmd = [x for x in cmd_str.split(' ') if x]
-    p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
+    p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
                          close_fds=True, cwd=self.working_dir, env=os.environ)
 
     for line in iter(p.stdout.readline, b''):
       self.log.write("\t%s"%line[:-1])
-    code = p.wait()
+
     for line in iter(p.stderr.readline, b''):
       self.log.write("\t%s"%line[:-1])
+    code = p.wait()
+    for line in iter(p.stderr.readline, b''):
+      self.log.write("\t!%s"%line[:-1])
     self.log.write('\tExit code:%s'%code)
     if code>0:
       self.log.write(cmd_str)

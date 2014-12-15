@@ -3,8 +3,8 @@ import argparse
 import os
 import shutil
 import subprocess
+import tempfile
 import sys
-
 profiles_dir = expanduser("~/Library/MobileDevice/Provisioning Profiles")
 default_keychain = expanduser('~/Library/Keychains/login.keychain')
 class CommandArgsProxy(object):
@@ -71,15 +71,20 @@ def ls_profiles(path=None, args=None):
   return infos
 
 def call(cmd):
-  p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
-                         close_fds=True, env=os.environ)
   output = []
-  for line in iter(p.stdout.readline, b''):
-    if len(line)>1:
-      output.append(line[:-1])
-  code = p.wait()
+  error = []
+  code = 1
+  with tempfile.TemporaryFile() as output_f:
+    with tempfile.TemporaryFile() as error_f:
+      p = subprocess.Popen(cmd, stderr=error_f, stdout=output_f,
+                         close_fds=True, env=os.environ)
+      code = p.wait()
+      output_f.seek(0)
+      error_f.seek(0)
+      error = error_f.read().split('\n')
+      output = output_f.read().split('\n')
   if code>0:
-    raise Exception('\n'.join(output)+'\nShell process exited with error code %s\n cmd: %s'%(code, cmd))
+    raise Exception('\n'.join(output)+'\n'.join(error)+'\nShell process exited with error code %s\n cmd: %s'%(code, cmd))
   return '\n'.join(output)
 
 def add_cert(path, args=None):
@@ -100,25 +105,26 @@ def ls_certs(args):
   return result
 
 def get_cert_sha1(common_name, args):
-  cmd = ['/usr/bin/security',
-  'find-certificate','-a','-Z','-c',
-  '\"{}\"'.format(common_name),
-  args.keychain, '| grep SHA-1']
-
+  #call(["/usr/bin/security", "find-certificate", "-a", "-Z", "-c", "\"iPhone Distribution: Entreprises Kastoff Inc.\"", "/Users/halicea/Library/Keychains/login.keychain"])
+    #/usr/bin/security find-certificate -a -Z -c "iPhone Distribution: Entreprises Kastoff Inc." /Users/halicea/Library/Keychains/login.keychain
+  cmd = ['/usr/bin/security','find-certificate','-a','-Z','-c',common_name, args.keychain]
   output = call(cmd).split('\n')
   prefix = "SHA-1 hash:"
   result = []
   for line in output:
-    result.append(line.strip()[len(prefix):].strip())
+    if prefix in line:
+      result.append(line.strip()[len(prefix):].strip())
   return result
 
-def rm_cert(path=None, sha1=None, args=None):
-  if path:
-    cmd = ['/usr/bin/security', 'delete-certificate', '-c', '%s'%path, args.keychain]
+def rm_cert(cert_name=None, sha1=None, args=None):
+  cmd = None
+  if cert_name:
+    cmd = ['/usr/bin/security', 'delete-certificate', '-c', '%s'%cert_name, args.keychain]
   if sha1:
-     cmd = ['/usr/bin/security', 'delete-certificate', '-Z', '\"%s\"'%sha1, args.keychain]
-  print cmd
-  call(cmd)
+    cmd = ['/usr/bin/security', 'delete-certificate', '-Z', sha1, args.keychain]
+  if cmd:
+    print cmd
+    call(cmd)
 
 command_dict={
   "cert":{

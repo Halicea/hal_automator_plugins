@@ -1,5 +1,5 @@
 from hal_configurator.lib.command_base import OperationBase, ArgumentDescriptor
-from ios_deployment_utils import add_cert, rm_cert, ls_certs
+from ios_deployment_utils import add_cert, rm_cert, ls_certs, get_cert_sha1
 from ios_deployment_utils import add_profile, rm_profile, CommandArgsProxy
 from replace_from_url import ReplaceFromUrl
 import os
@@ -52,9 +52,12 @@ class RemoveIOSCertificates(OperationBase):
       print "Found Cert:{} matching with:{}".format(cert_name, self.search_string)
       if self.search_string in cert_name:
         certs_to_delete.append(cert_name)
+    args = CommandArgsProxy()
     for cert_name in certs_to_delete:
       print 'Deleting: {}'.format(cert_name)
-      rm_cert(cert_name, CommandArgsProxy())
+      sha1s = get_cert_sha1(cert_name, args=args)
+      for sha in sha1s:
+          rm_cert(sha1=sha, args=args)
 
 class ListIOSCertificates(OperationBase):
   '''
