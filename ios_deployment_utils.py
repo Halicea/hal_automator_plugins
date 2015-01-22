@@ -104,19 +104,21 @@ def ls_profiles(path=None, target=None, profile_type='production'):
   _pdir = path
   if path is None:
     _pdir = profiles_dir
-  for p in os.listdir(_pdir):
-    if p.endswith('.mobileprovision'):
-      pfile = os.path.join(_pdir, p)
-      info = get_info(pfile)
-      if target:
-        if target in info['target']:
-          if profile_type:
-            if 'type' in info and info['type'] == profile_type:
+  for root, dirs, files in os.walk(_pdir):
+    for f in files:
+      if f.endswith('.mobileprovision'):
+        import pdb; pdb.set_trace()  # XXX BREAKPOINT
+        pfile = os.path.join(root, f)
+        info = get_info(pfile)
+        if target:
+          if target in info['target']:
+            if profile_type:
+              if 'type' in info and info['type'] == profile_type:
+                infos.append(info)
+            else:
               infos.append(info)
-          else:
-            infos.append(info)
-      else:
-        infos.append(info)
+        else:
+          infos.append(info)
   counter = 1
   infos = sorted(infos, key=lambda x: x['expiration_date'], reverse=False)
   for info in infos:
