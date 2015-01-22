@@ -145,6 +145,10 @@ class AddIOSProvisioningProfile(OperationBase):
         self.result = True
     else:
         path, target, profile_type = profile_item.split("*")
+        if not os.path.isabs(path):
+            from urlparse import urlparse
+            root = urlparse(self.executor.resources_root)
+            path = os.path.join(root.path, path)
         profile_infos = ls_profiles(path, target, profile_type)
         for info in profile_infos:
             self.downloader.set_args(
