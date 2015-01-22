@@ -202,7 +202,7 @@ command_dict = {
     },
     'profile': {
         'add': add_profile,
-        'rm': rm_profile,
+        'rm': rm_profile_like_on_path,
         'list': ls_profiles
     }
 }
