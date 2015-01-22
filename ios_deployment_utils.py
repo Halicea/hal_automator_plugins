@@ -95,9 +95,17 @@ def add_profile(path, args=None):
   shutil.copy(path, j(profiles_dir, '%s.mobileprovision' % info['uuid']))
 
 
-def rm_profile(path, args=None):
+def rm_profile_by_app_id(target=None, profile_type=None):
+  infos = ls_profiles(profiles_dir, target, profile_type)
+  for info in infos:
+    os.remove(info['path'])
+  return infos
+
+def rm_profile_like_on_path(path=None, args=None):
   info = get_info(path)
-  os.remove(os.path.join(profiles_dir, '%s.mobileprovision' % info['uuid']))
+  profile_path = os.path.join(profiles_dir, '%s.mobileprovision' % info['uuid'])
+  os.remove(profile_path)
+  return profile_path
 
 def ls_profiles(path=None, target=None, profile_type='production'):
   infos = []
@@ -107,7 +115,6 @@ def ls_profiles(path=None, target=None, profile_type='production'):
   for root, dirs, files in os.walk(_pdir):
     for f in files:
       if f.endswith('.mobileprovision'):
-        import pdb; pdb.set_trace()  # XXX BREAKPOINT
         pfile = os.path.join(root, f)
         info = get_info(pfile)
         if target:

@@ -2,7 +2,7 @@ import os
 from hal_configurator.lib.command_base import OperationBase, ArgumentDescriptor
 from ios_deployment_utils import(
     add_cert, rm_cert, ls_certs, get_cert_sha1,
-    add_profile, rm_profile, ls_profiles,
+    add_profile, rm_profile_like_on_path, rm_profile_by_app_id, ls_profiles,
     CommandArgsProxy)
 
 from replace_from_url import ReplaceFromUrl
@@ -177,13 +177,17 @@ class RemoveIOSProvisioningProfile(OperationBase):
     self.kwargs["Resource"] = self.provistioning_profile = Resource
 
   def run(self):
-    self.downloader.set_args(
-        self.provistioning_profile,
-        '/tmp/temp.mobileprovision')
-    self.downloader.run()
-    rm_profile('/tmp/temp.mobileprovision', CommandArgsProxy())
-    os.unlink('/tmp/temp.mobileprovision')
-    self.result = True
+    if '*' in self.provistioning_profile:
+      target, profile_type = self.provistioning_profile.split('*')
+      rm_profile_by_app_id(target, profile_type)
+    else:
+      self.downloader.set_args(
+          self.provistioning_profile,
+          '/tmp/temp.mobileprovision')
+      self.downloader.run()
+      rm_profile_like_on_path('/tmp/temp.mobileprovision', CommandArgsProxy())
+      os.unlink('/tmp/temp.mobileprovision')
+      self.result = True
 
 __plugins__ = [
     InstallIOSCertificate,
