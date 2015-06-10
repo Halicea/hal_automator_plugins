@@ -12,13 +12,13 @@ default_keychain = expanduser('~/Library/Keychains/login.keychain')
 class CommandArgsProxy(object):
 
     def __init__(self, **kwargs):
-        self.command = kwargs.has_key('command') and kwargs['command'] or None
-        self.command_type = kwargs.has_key(
-            'command_type') and kwargs['command_type'] or None
-        self.passwd = kwargs.has_key('passwd') and kwargs['passwd'] or None
-        self.match = kwargs.has_key('match') and kwargs['match'] or ''
-        self.keychain = kwargs.has_key(
-            'keychain') and kwargs['keychain'] or default_keychain
+        def get(name, default=None):
+            return name in kwargs and kwargs[name] or default
+        self.command = get('command')
+        self.command_type = get('command_type')
+        self.passwd = get('passwd')
+        self.match = get('match', '')
+        self.keychain = get('keychain', default_keychain)
 
 
 def get_provistioning_profile_info(path, args=None):
@@ -162,8 +162,6 @@ def call(cmd):
                         '\n cmd: %s' % cmd)
     return '\n'.join(output)
 
-def check_cert_expired(path, args=None):
-    
 
 def add_cert(path, args=None):
     cmd = '/usr/bin/security import %s -k %s -P %s -T  -A /usr/bin/codesign'
