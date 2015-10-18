@@ -43,8 +43,12 @@ class ShellScript(OperationBase):
     print os.getcwd()
     cmd_str = self.value_substitutor.substitute(self.command)
     cmd = [x for x in cmd_str.split(' ') if x]
-    p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
-                         close_fds=True, cwd=self.working_dir, env=os.environ)
+    p = None
+    if os.name != 'nt':
+      p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
+                           close_fds=True, cwd=self.working_dir, env=os.environ)
+    else:
+      p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=self.working_dir, env=os.environ) 
 
     for line in iter(p.stdout.readline, b''):
       self.log.write("\t%s"%line[:-1])
