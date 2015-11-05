@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shlex
 from hal_configurator.lib.command_base import OperationBase, InvalidCommandArgumentsError,\
   ArgumentDescriptor
 class ShellScriptError(Exception):
@@ -41,9 +42,12 @@ class ShellScript(OperationBase):
 
   def run(self):
     print os.getcwd()
+    
     cmd_str = self.value_substitutor.substitute(self.command)
-    cmd = [x for x in cmd_str.split(' ') if x]
+    arg_list = args = shlex.split(cmd_str)
+    cmd = arg_list
     p = None
+    print cmd
     if os.name != 'nt':
       p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
                            close_fds=True, cwd=self.working_dir, env=os.environ)
