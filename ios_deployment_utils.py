@@ -134,12 +134,12 @@ def ls_profiles(path=None, target=None, profile_type='production'):
                 else:
                     infos.append(info)
     infos = sorted(infos, key=lambda x: x['expiration_date'], reverse=False)
-    # counter = 1
-    # for info in infos:
-    #   print '*'*20
-    #   print str(counter)+".", info['name'], info['target'], info['uuid'], info["type"]
-    #   print '*'*20
-    #   counter += 1
+    counter = 1
+    for info in infos:
+        # print '*' * 20
+        # print str(counter) + ".", info['name'], info['target'], info['uuid'], info["type"]
+        # print '*' * 20
+        counter += 1
     return infos
 
 
@@ -166,7 +166,7 @@ def call(cmd):
 def add_cert(path, args=None):
     cmd = '/usr/bin/security import %s -k %s -P %s -T /usr/bin/codesign'
     cmd = cmd % (path, args.keychain, args.passwd)
-    print cmd
+    # print cmd
     call(cmd.split(' '))
 
 

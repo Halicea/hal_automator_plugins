@@ -73,7 +73,10 @@ class ReplaceText(OperationBase):
         if self.verbose:
           self.log.write("\tfound "+str(len(matchset))+" textblocks to replace:")
           for k in matchset:
-            self.log.write("\t\t item:"+str(k))
+            try:
+              self.log.write("\t\t item:"+str(k))
+            except:
+              pass
 
     # pattern is in the file, so perform replace operation.
     if self.verbose:
