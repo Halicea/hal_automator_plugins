@@ -162,8 +162,11 @@ class AddIOSProvisioningProfile(OperationBase):
                     'file://' + info['path'],
                     '/tmp/temp.mobileprovision')
                 self.downloader.run()
+                # print('Provisioning Profile found at:{}'.format(info['path']))
                 add_profile('/tmp/temp.mobileprovision', CommandArgsProxy())
                 os.unlink('/tmp/temp.mobileprovision')
+            else:
+                print('No Provisioning file found')
 
 
 class RemoveIOSProvisioningProfile(OperationBase):
