@@ -27,11 +27,12 @@ class ReplaceFromUrl(OperationBase):
       if res.startswith('file://'):
         temp_path = res[len("file://"):]
         normalized_temp_path = os.path.normpath(temp_path)
-        res = "file://"+normalized_temp_path
+        res = "file://"+normalized_temp_path.replace('\\', '/')
         print "new res:", res
       if not ("://" in res):
         res = self.executor.resources_root+"/"+res
-
+      # res = res.replace('file://////', 'file:///')
+      self.log.write('Res is :'+res)
       f = urllib2.urlopen(res)
       dest = self.destination
       if not dest.startswith('/'):

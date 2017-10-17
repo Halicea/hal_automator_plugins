@@ -41,18 +41,31 @@ class ShellScript(OperationBase):
       raise InvalidCommandArgumentsError(str(errors))
 
   def run(self):
-    print os.getcwd()
+    current_dir = os.getcwd()
     
     cmd_str = self.value_substitutor.substitute(self.command)
     arg_list = args = shlex.split(cmd_str)
     cmd = arg_list
+    for idx, value in enumerate(cmd):
+      if value.startswith('./'):
+        value = os.path.join(current_dir, value.replace('/', os.path.sep))
+        cmd[idx] = value
+    self.log.write(str(cmd))
+    
     p = None
     print cmd
+    work_dir = os.path.abspath(self.working_dir.replace('/', os.path.sep))
+    self.log.write('working dir:'+work_dir)
     if os.name != 'nt':
       p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE,
                            close_fds=True, cwd=self.working_dir, env=os.environ)
     else:
-      p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=self.working_dir, env=os.environ) 
+      p = subprocess.Popen(cmd, 
+        stderr=subprocess.PIPE, 
+        stdout=subprocess.PIPE, 
+        cwd= work_dir, 
+        env=os.environ)
+
 
     for line in iter(p.stdout.readline, b''):
       self.log.write("\t%s"%line[:-1])
